@@ -45,3 +45,4 @@ const Message = ({role, content}) => {
 }
 
 export default Message
+
