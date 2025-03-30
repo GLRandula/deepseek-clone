@@ -14,7 +14,7 @@ const openai = new OpenAI({
 
 export async function POST(req){
     try {
-        const {userId} = getAuth(req);
+        const {userId} = getAuth(req)
 
         // Extract chatId and prompt from the request body
         const { chatId, prompt } = await req.json();
@@ -28,7 +28,7 @@ export async function POST(req){
 
         // Find the chat document in the database based on userId and chatId
         await connectDB();
-        const data = await Chat.findOne({userId, _id: chatId});
+        const data = await Chat.findOne({userId, _id: chatId})
 
         // Create a user message object
         const userPrompt = {
@@ -47,7 +47,7 @@ export async function POST(req){
         });
 
         const message = completion.choices[0].message;
-        message.timestamp = Date.now();
+        message.timestamp = Date.now()
         data.message.push(message);
         data.save();
 

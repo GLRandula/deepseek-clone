@@ -13,7 +13,7 @@ export async function GET(req){
 
         // Connect to the database and fetch all chats for the user
         await connectDB();
-        await Chat.find({userId});
+        const data = await Chat.find({userId});
 
         return NextResponse.json({ success: true, data });
 
