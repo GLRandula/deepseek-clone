@@ -1,14 +1,16 @@
 import { assets } from "@/assets/assets";
 import toast from 'react-hot-toast';
 import axios from "axios";
+import { useAuth } from "@clerk/nextjs";
 import { useAppContext } from "@/context/AppContext";
 import { Assistant } from "next/font/google";
 import Image from "next/image";
 import React, { useState } from "react";
 
 const PromptBox = ({setIsLoading, isLoading}) => {
-  const [prompt, setPrompt] = useState("");
+  const [prompt, setPrompt] = useState('');
   const {user, chats, setChats, selectedChat, setSelectedChat } = useAppContext();
+  const { getToken } = useAuth();
 
   const handleKeyDown = (e) => {
     if(e.key === "Enter" && !e.shiftKey){
@@ -41,7 +43,7 @@ const PromptBox = ({setIsLoading, isLoading}) => {
           chat._id === selectedChat._id
             ? {
                 ...chat,
-                messages: [...chat.messages, userPrompt],
+                messages: [...chat.messages, userPrompt]
               }
             : chat
         )
@@ -53,13 +55,16 @@ const PromptBox = ({setIsLoading, isLoading}) => {
         messages: [...prev.messages, userPrompt],
       }));
 
+      const token = await getToken();
+
       const { data } = await axios.post("/api/chat/ai", {
         chatId: selectedChat._id,
-        prompt,
+        prompt
       },
       {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,  // Add this line
         }
       },
     );
@@ -91,7 +96,7 @@ const PromptBox = ({setIsLoading, isLoading}) => {
 
         for (let i = 0; i < messageTokens.length; i++) {
           setTimeout(() => {
-            assistantMessage.content = messageTokens.slice(0, i+1).join(" ");
+            assistantMessage.content = messageTokens.slice(0, i + 1).join(" ");
             setSelectedChat((prev) => {
               const updatedMessages = [
                 ...prev.messages.slice(0, -1),

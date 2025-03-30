@@ -12,14 +12,11 @@ export const useAppContext = () => {
 };
 
 export const AppContextProvider = ({ children }) => {
-  const { user } = useUser();
-  const { getToken } = useAuth();
+  const { user } = useUser()
+  const { getToken } = useAuth()
 
   const [chats, setChats] = useState([]);
-  const [selectedChat, setSelectedChat] = useState({
-    _id: null,
-    messages: []
-  });
+  const [selectedChat, setSelectedChat] = useState(null);
 
   const createNewChat = async () => {
     try {
@@ -27,15 +24,15 @@ export const AppContextProvider = ({ children }) => {
 
       const token = await getToken();
 
-      const { data } = await axios.post(
-        "/api/chat/create",
+      await axios.post(
+        '/api/chat/create',
         {},
         {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         }
-      );
+      )
 
       fetchUsersChats();
     } catch (error) {
@@ -48,7 +45,7 @@ export const AppContextProvider = ({ children }) => {
       const token = await getToken();
 
       const { data } = await axios.get(
-        "/api/chat/get",
+        '/api/chat/get',
         {},
         {
           headers: {
@@ -87,7 +84,7 @@ export const AppContextProvider = ({ children }) => {
     if (user) {
       fetchUsersChats();
     }
-  }, [user]);
+  }, [user])
 
   const value = {
     user,
