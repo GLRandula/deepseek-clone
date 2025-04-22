@@ -13,13 +13,17 @@ const openai = new OpenAI({
 });
 
 export async function POST(req){
+    console.log("🔥 POST handler called");
     try {
         const {userId} = getAuth(req)
+        console.log("✅ Auth extracted:", userId);
 
         // Extract chatId and prompt from the request body
         const { chatId, prompt } = await req.json();
+        console.log("✅ Body:", chatId, prompt);
 
         if(!userId){
+            console.log("❌ User not authenticated");
             return NextResponse.json({
                 success: false,
                 message: "User not authenticated",
@@ -28,8 +32,17 @@ export async function POST(req){
 
         // Find the chat document in the database based on userId and chatId
         await connectDB();
-        const data = await Chat.findOne({userId, _id: chatId})
+        console.log("✅ DB Connected");
 
+        const data = await Chat.findOne({userId, _id: chatId})
+        console.log("✅ Chat found:", data);
+
+        if (!data) {
+            console.log("❌ Chat not found");
+            return NextResponse.json({ success: false, message: "Chat not found" });
+          }
+
+        
         // Create a user message object
         const userPrompt = {
             role: "user",
@@ -38,18 +51,24 @@ export async function POST(req){
         };
 
         data.messages.push(userPrompt);
+        await data.save();
 
+        console.log("message",prompt);
+        
         // Call the DeepSeek API to get a chat completion
         const completion = await openai.chat.completions.create({
-            messages: [{ role: "user", content: prompt }],
+            messages: [{ role: "system", content: prompt }],
             model: "deepseek-chat",
-            store: true,
         });
 
         const message = completion.choices[0].message;
+
         message.timestamp = Date.now()
-        data.message.push(message);
-        data.save();
+        data.messages.push(message);
+        console.log("Before save:", data.messages);
+        data.markModified("messages");
+        await data.save();
+        console.log("After save:", data.messages);
 
         return NextResponse.json({success: true, data: message})
 

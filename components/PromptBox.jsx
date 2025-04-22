@@ -57,16 +57,16 @@ const PromptBox = ({setIsLoading, isLoading}) => {
 
       const token = await getToken();
 
-      const { data } = await axios.post("/api/chat/ai", {
+      const { data } = await axios.post('/api/chat/ai', {
         chatId: selectedChat._id,
         prompt
       },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,  // Add this line
-        }
-      },
+      // {
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Authorization: `Bearer ${token}`,  // Add this line
+      //   }
+      // },
     );
 
       if (data.success) {
@@ -89,9 +89,11 @@ const PromptBox = ({setIsLoading, isLoading}) => {
            timestamp: Date.now(),
         }
 
+        console.log(message);
+
         setSelectedChat((prev) => ({
           ...prev,
-          messages: [...prev.messages, assistantMessage],
+          messages: [ ...prev.messages, assistantMessage ],
         }));
 
         for (let i = 0; i < messageTokens.length; i++) {

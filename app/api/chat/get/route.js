@@ -8,7 +8,7 @@ export async function GET(req){
         const { userId } = getAuth(req);
 
         if(!userId){
-            return NextResponse.json({success: false, message: "User not authenticatd",})
+            return NextResponse.json({success: false, message: "User not authenticatd",});
         }
 
         // Connect to the database and fetch all chats for the user
