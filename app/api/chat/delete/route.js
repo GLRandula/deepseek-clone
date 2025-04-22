@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function POST(req){
     try {
         const { userId } = getAuth(req);
-        const { chatIdId } = await req.json();
+        // const { chatId } = await req.json();
 
         if(!userId){
             return NextResponse.json({success: false, message: "User not authenticatd",})
